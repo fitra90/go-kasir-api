@@ -46,17 +46,8 @@ func main() {
 	productHandler := handlers.NewProductHandler(productService)
 
 	// setup routes
-	http.HandleFunc("/api/produk/", productHandler.GetByID)
+	http.HandleFunc("/api/produk/", productHandler.HandleByID)
 	http.HandleFunc("/api/produk", productHandler.HandleProducts)
-
-	addr := "0.0.0.0:" + config.Port
-	fmt.Println("Server running di", addr)
-
-	err = http.ListenAndServe(addr, nil)
-	if err != nil {
-		fmt.Println("gagal running server")
-	}
-
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
@@ -65,10 +56,11 @@ func main() {
 		})
 	})
 
-	fmt.Println("Server running di localhost" + config.Port)
+	addr := ":" + config.Port
+	fmt.Println("Server running at", addr)
 
-	err = http.ListenAndServe(":"+config.Port, nil)
+	err = http.ListenAndServe(addr, nil)
 	if err != nil {
-		fmt.Println("gagal running server")
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }

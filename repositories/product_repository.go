@@ -35,7 +35,7 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 }
 
 func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
-	row := repo.db.QueryRow("SELECT id, name, price, stock FROM products WHERE id = ?", id)
+	row := repo.db.QueryRow("SELECT id, name, price, stock FROM products WHERE id = $1", id)
 	var product models.Product
 	err := row.Scan(&product.ID, &product.Name, &product.Price, &product.Stock)
 	if err != nil {
@@ -94,5 +94,5 @@ func (repo *ProductRepository) Delete(id int) error {
 		return errors.New("product not found")
 	}
 
-	return err
+	return nil
 }
