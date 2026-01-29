@@ -56,7 +56,15 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated) // 201
-	json.NewEncoder(w).Encode(product)
+
+	response := map[string]interface{}{
+		"name":        product.Name,
+		"price":       product.Price,
+		"stock":       product.Stock,
+		"category_id": product.CategoryID,
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 // HANDLE GET BY ID
@@ -137,6 +145,15 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	//custom response
+	resp := struct {
+		ID         int    `json:"id"`
+		Name       string `json:"name"`
+		Price      int    `json:"price"`
+		Stock      int    `json:"stock"`
+		CategoryID int    `json:"category_id"`
+	}{product.ID, product.Name, product.Price, product.Stock, product.CategoryID}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(product)
+	json.NewEncoder(w).Encode(resp)
 }

@@ -29,6 +29,7 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 		if err != nil {
 			return nil, err
 		}
+		product.CategoryID = product.Category.ID
 		products = append(products, product)
 	}
 
@@ -46,14 +47,19 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 		}
 		return nil, err
 	}
+	product.CategoryID = product.Category.ID
 
 	return &product, nil
 }
 
 func (repo *ProductRepository) Create(product *models.Product) error {
+	catID := product.CategoryID
+	if catID == 0 {
+		catID = product.Category.ID
+	}
 
 	query := "INSERT INTO products (name, price, stock, category_id) VALUES ($1, $2, $3, $4) RETURNING id"
-	err := repo.db.QueryRow(query, product.Name, product.Price, product.Stock, product.Category.ID).Scan(&product.ID)
+	err := repo.db.QueryRow(query, product.Name, product.Price, product.Stock, catID).Scan(&product.ID)
 	if err != nil {
 		return err
 	}
@@ -62,8 +68,13 @@ func (repo *ProductRepository) Create(product *models.Product) error {
 }
 
 func (repo *ProductRepository) Update(product *models.Product) error {
+	catID := product.CategoryID
+	if catID == 0 {
+		catID = product.Category.ID
+	}
+
 	query := "UPDATE products SET name = $1, price = $2, stock = $3, category_id = $4 WHERE id = $5"
-	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.Category.ID, product.ID)
+	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, catID, product.ID)
 	if err != nil {
 		return err
 	}
