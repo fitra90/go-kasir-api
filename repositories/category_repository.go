@@ -48,10 +48,10 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
 	return &category, nil
 }
 
-func (repo *CategoryRepository) Create(cate *models.Category) error {
+func (repo *CategoryRepository) Create(category *models.Category) error {
 
 	query := "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING id"
-	err := repo.db.QueryRow(query, cate.Name, cate.Description).Scan(&cate.ID)
+	err := repo.db.QueryRow(query, category.Name, category.Description).Scan(&category.ID)
 	if err != nil {
 		return err
 	}
@@ -59,9 +59,9 @@ func (repo *CategoryRepository) Create(cate *models.Category) error {
 	return nil
 }
 
-func (repo *CategoryRepository) Update(cate *models.Category) error {
+func (repo *CategoryRepository) Update(category *models.Category) error {
 	query := "UPDATE categories SET name = $1, description = $2 WHERE id = $3"
-	result, err := repo.db.Exec(query, cate.Name, cate.Description, cate.ID)
+	result, err := repo.db.Exec(query, category.Name, category.Description, category.ID)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (repo *CategoryRepository) Update(cate *models.Category) error {
 	}
 
 	if rows == 0 {
-		return errors.New("cate not found")
+		return errors.New("category not found")
 	}
 
 	return nil
