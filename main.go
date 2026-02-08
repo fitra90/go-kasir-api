@@ -45,20 +45,28 @@ func main() {
 	productRepo := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
+	http.HandleFunc("/api/produk/", productHandler.HandleByID)
+	http.HandleFunc("/api/produk", productHandler.HandleProducts)
 
 	// category
 	categoryRepo := repositories.NewCategoryRepository(db)
 	categoryService := services.NewCategoryService(categoryRepo)
 	categoryHandler := handlers.NewCategoryHandler(categoryService)
-
-	// setup routes
-	//products
-	http.HandleFunc("/api/produk/", productHandler.HandleByID)
-	http.HandleFunc("/api/produk", productHandler.HandleProducts)
-
-	//category
 	http.HandleFunc("/api/category/", categoryHandler.HandleByID)
 	http.HandleFunc("/api/category", categoryHandler.HandleCategories)
+
+	//transaction
+	transactionRepo := repositories.NewTransactionRepository(db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	transactionHandler := handlers.NewTransactionHandler(transactionService)
+	http.HandleFunc("/api/checkout", transactionHandler.HandleCheckout)
+
+	//report hari ini
+	reportRepo := repositories.NewReportRepository(db)
+	reportService := services.NewReportService(reportRepo)
+	reportHandler := handlers.NewReportHandler(reportService)
+	http.HandleFunc("/api/report/", reportHandler.HandleReportCustom)
+	http.HandleFunc("/api/report", reportHandler.HandleReports)
 
 	// test api health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
